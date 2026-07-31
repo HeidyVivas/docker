@@ -1,0 +1,51 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: proxy-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - red_interna
+
+  db:
+    image: mysql:8.0
+    restart: always
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - red_interna
+
+  backend:
+    image: heidyvivas/mi-api:v1
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - red_interna
+
+  frontend:
+    image: heidyvivas/mi-frontend:v1
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    networks:
+      - red_interna
+
+networks:
+  red_interna:
+
+volumes:
+  db_data:
