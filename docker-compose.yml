@@ -1,46 +1,68 @@
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: proxy-nginx
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: proxy-manager
+    restart: always
     ports:
-      - "80:80"
+      - "80:80" # HTTP
+      - "81:81" # Administración de la API
+      - "443:443" # HTTPS
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - backend
+      - ./npm_data:/data
+      - ./npm_letsencrypt:/etc/letsencrypt
     networks:
       - red_interna
-
   db:
     image: mysql:8.0
+    container_name: db
     restart: always
     env_file: .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - red_interna
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     image: heidyvivas/mi-api:v1
+    container_name: backend
+    restart: always
     env_file: .env
-    depends_on:
-      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - "8000:8000"
+      - "5050:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - red_interna
 
   frontend:
     image: heidyvivas/mi-frontend:v1
+    container_name: frontend
+    restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
-      - "5173:5173"
+      - "5174:5173"
     networks:
       - red_interna
 
