@@ -1,4 +1,5 @@
 venv/
+.venv/
 .env
 sample-app.sh
 .venv/n.venv/
