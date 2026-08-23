@@ -63,7 +63,7 @@ services:
       - red_interna
 
   frontend:
-    image: heidyvivas/mi-frontend:v1
+    image: heidyvivas/mi-frontend:v2
     container_name: frontend
     restart: always
     depends_on:
