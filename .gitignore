@@ -2,4 +2,8 @@ venv/
 .venv/
 .env
 sample-app.sh
-.venv/n.venv/
+*.pem
+*.pem:Zone.Identifier
+__pycache__/
+.pytest_cache/
+tempdir/
