@@ -1,14 +1,15 @@
+import os
 from flask import Flask
 
 app = Flask(__name__)
 
-# Vulnerabilidad intencional: credencial quemada en el código
-MYSQL_PASSWORD = "super_secret_123"
+# Ahora se lee desde variable de entorno, no está en el código
+MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD")
 
 @app.route("/")
 def home():
-    return "Hello World"
+    return "Hello World", 200
 
 if __name__ == "__main__":
-    # Vulnerabilidad intencional: debug=True en producción
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # debug desactivado para producción
+    app.run(host="0.0.0.0", port=5000, debug=False)
