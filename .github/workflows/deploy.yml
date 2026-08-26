@@ -22,7 +22,7 @@ jobs:
           pip install pytest bandit
 
       - name: Escaneo de seguridad (bandit)
-        run:bandit -r . -s B101 #Ignorar los archivos test
+        run: bandit -r app/ -s B101
 
       - name: Ejecutar las pruebas
         run: pytest
@@ -51,16 +51,16 @@ jobs:
 
       - name: Escanear contenedor con trivy
         uses: aquasecurity/trivy-action@master
-        with: 
-          image-ref: 'HeidyVivas/mi-api:latest'
+        with:
+          image-ref: 'heidyvivas/mi-api:v1'
           format: 'table'
           exit-code: '1' # Si encuentra alguna falla, rompe la ejecución
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH' # Son los que van a detener la ejecución
-        
+
       - name: subir imagen a Docker Hub
-        run: docker push HeidyVivas/mi-api:latest
+        run: docker push heidyvivas/mi-api:v1
 
       - name: Desplegar el servidor cloud
         uses: appleboy/ssh-action@v1.0.3
