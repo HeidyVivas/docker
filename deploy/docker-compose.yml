@@ -49,6 +49,8 @@ services:
       DB_NAME: ${MYSQL_DATABASE}
       DB_USER: root
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      FLASK_HOST: "0.0.0.0"
+      FLASK_PORT: "8000"
     ports:
       - "5050:8000"
     depends_on:
@@ -82,4 +84,3 @@ volumes:
     name: mysql-data
   uptime-kuma-data:
     name: uptime-kuma-data
-
