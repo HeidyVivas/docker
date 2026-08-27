@@ -7,3 +7,4 @@ sample-app.sh
 __pycache__/
 .pytest_cache/
 tempdir/
+.msys*
