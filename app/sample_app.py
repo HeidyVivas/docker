@@ -1,9 +1,10 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, origins=["https://987654hv.duckdns.org"])
 
-# Ahora se lee desde variable de entorno, no está quemada en el código
 MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD")
 
 @app.route("/")
